@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(Camera))]
 public class PlayerMovement : MonoBehaviour {
 
     #region Public members
@@ -27,7 +26,7 @@ public class PlayerMovement : MonoBehaviour {
     #region Private members
 
     private CharacterController charController;
-    private Camera FPScamera;
+    private Camera fpsCamera;
     private float rotUpDown = 0f;
     private float verticalVelocity = 0;
     private bool isGrounded = true;
@@ -43,7 +42,7 @@ public class PlayerMovement : MonoBehaviour {
     // Use this for initialization
     void Start () {
         charController = GetComponent<CharacterController>();
-        FPScamera = GetComponentInChildren<Camera>();
+        fpsCamera = GetComponentInChildren<Camera>();
 
         initialGroundingDistance = groundingDistance;
     }
@@ -56,7 +55,7 @@ public class PlayerMovement : MonoBehaviour {
 
         rotUpDown -= Input.GetAxis("Mouse Y") * mouseSensitivity;
         rotUpDown = Mathf.Clamp(rotUpDown, MIN_X_ROTATION, MAX_X_ROTATION);
-        FPScamera.transform.localRotation = Quaternion.Euler(rotUpDown, 0, 0);
+        fpsCamera.transform.localRotation = Quaternion.Euler(rotUpDown, 0, 0);
 
         //movement
         float forwardSpeed = Input.GetAxis("Vertical");

@@ -9,6 +9,7 @@ public class ShootableObject : MonoBehaviour {
 	public void DealDamage(int damage)
     {
         health -= damage;
+        Debug.Log(health);
 
         if (health <= 0)
             Destroy(gameObject);
