@@ -83,7 +83,9 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //JUMPING
-        verticalVelocity += Physics.gravity.y * Time.deltaTime;
+        if(verticalVelocity > Physics.gravity.y)
+            verticalVelocity += Physics.gravity.y * Time.deltaTime;
+
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             verticalVelocity = jumpSpeed;
