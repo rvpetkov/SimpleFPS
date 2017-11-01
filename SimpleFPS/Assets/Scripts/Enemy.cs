@@ -22,9 +22,4 @@ public class Enemy : MonoBehaviour {
             agent.SetDestination(player.transform.position);
         }
     }
-
-    void FixedUpdate()
-    {
-        
-    }
 }
