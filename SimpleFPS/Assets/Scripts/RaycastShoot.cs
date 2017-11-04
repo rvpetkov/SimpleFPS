@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(LineRenderer))]
 public class RaycastShoot : MonoBehaviour {
 
     #region Public members
@@ -11,7 +10,13 @@ public class RaycastShoot : MonoBehaviour {
     public float weaponRange = 50f;
     public float fireRate = 0.25f;
     public float hitForce = 100f;
+    public LineRenderer laserLine;
+
+    [Tooltip("This is the spot where the shot visual will start from.")]
     public Transform weaponEnd;
+
+    [Tooltip("This object will be spawned at the point where the shot collided with the target.")]
+    public GameObject shotDebris;
 
     [Header("Debugging")]
     public bool debugActive = true;
@@ -22,7 +27,6 @@ public class RaycastShoot : MonoBehaviour {
 
     private Camera fpsCamera;
     private AudioSource weaponAudio;
-    private LineRenderer laserLine;
     private WaitForSeconds shotDuration = new WaitForSeconds(0.07f);
     private float nextFire;
     RaycastHit hit;
@@ -34,7 +38,6 @@ public class RaycastShoot : MonoBehaviour {
     void Start () {
         fpsCamera = GetComponentInParent<Camera>();
         weaponAudio = GetComponent<AudioSource>();
-        laserLine = GetComponent<LineRenderer>();
     }
 	
 	// Update is called once per frame
@@ -42,19 +45,13 @@ public class RaycastShoot : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
-            StartCoroutine(Shoot());        //Start a coroutine responsible for visualization/audio of the shot
-            origin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f));   //Origin of the RayCast located in the center of the camera.
+
             laserLine.SetPosition(0, weaponEnd.position);       //The laserLine will start at the point which represents the end of the weapon.
 
+            origin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f));   //Origin of the RayCast located in the center of the camera.
             if(Physics.Raycast(origin, fpsCamera.transform.forward, out hit, weaponRange))  //if we hit something
             {
                 laserLine.SetPosition(1, hit.point);
-                ShootableObject target = hit.collider.GetComponentInParent<ShootableObject>();
-                if (target != null)
-                    target.DealDamage(weaponDamage);
-
-                if(hit.rigidbody != null)
-                    hit.rigidbody.AddForce(-hit.normal * hitForce);
             }
             else        //if we don't hit anything
             {
@@ -62,6 +59,7 @@ public class RaycastShoot : MonoBehaviour {
                 laserLine.SetPosition(1, origin + (fpsCamera.transform.forward * weaponRange));
             }
 
+            StartCoroutine(ShootEffect(hit));        //Start a coroutine responsible for visualization/audio of the shot
         }
 	}
 
@@ -73,12 +71,34 @@ public class RaycastShoot : MonoBehaviour {
         }
     }
 
-    private IEnumerator Shoot()
+    private IEnumerator ShootEffect(RaycastHit hit)
     {
+        //Deal damage if the target is ShootableObject
+        ShootableObject target = hit.collider.GetComponentInParent<ShootableObject>();
+        if (target != null)
+            target.DealDamage(weaponDamage);
+
+        //Add physics effect if the target has a Rigidbody
+        if (hit.rigidbody != null)
+            hit.rigidbody.AddForce(-hit.normal * hitForce);
+
         //Play the weapon's audio source if any.
         if (weaponAudio != null)
             weaponAudio.Play();
 
+        //Manage and display the shot's debris if any.
+        if (shotDebris != null)
+        {
+            Transform parent = hit.transform.Find("ShotEffects");     //This is the parent object holding all shot effects.
+            if (parent == null)
+            {
+                parent = new GameObject("ShotEffects").transform;
+                parent.SetParent(hit.transform);
+            }
+            Instantiate(shotDebris, hit.point, Quaternion.LookRotation(hit.normal), parent);
+        }
+
+        //Manage the LineRenderer
         laserLine.enabled = true;
 
         yield return shotDuration;      // we wait for some time before the laserLine gets disabled
