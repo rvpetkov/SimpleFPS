@@ -15,9 +15,6 @@ public class RaycastShoot : MonoBehaviour {
     [Tooltip("This is the spot where the shot visual will start from.")]
     public Transform weaponEnd;
 
-    [Tooltip("This object will be spawned at the point where the shot collided with the target.")]
-    public GameObject shotDebris;
-
     [Header("Debugging")]
     public bool debugActive = true;
 
@@ -31,6 +28,8 @@ public class RaycastShoot : MonoBehaviour {
     private float nextFire;
     RaycastHit hit;
     Vector3 origin;
+
+    private static string SHOTEFFECTS_PARENT_NAME = "ShotEffects";
 
     #endregion
 
@@ -58,7 +57,6 @@ public class RaycastShoot : MonoBehaviour {
                 //we still draw our laser line from the weapon to a point that is directly in front of the camera at a distance of weaponRange.
                 laserLine.SetPosition(1, origin + (fpsCamera.transform.forward * weaponRange));
             }
-
             StartCoroutine(ShootEffect(hit));        //Start a coroutine responsible for visualization/audio of the shot
         }
 	}
@@ -73,30 +71,47 @@ public class RaycastShoot : MonoBehaviour {
 
     private IEnumerator ShootEffect(RaycastHit hit)
     {
-        //Deal damage if the target is ShootableObject
-        ShootableObject target = hit.collider.GetComponentInParent<ShootableObject>();
-        if (target != null)
-            target.DealDamage(weaponDamage);
+        if(hit.transform != null)       //if we actually hit something
+        {
+            bool targetIsAlive = true;
 
-        //Add physics effect if the target has a Rigidbody
-        if (hit.rigidbody != null)
-            hit.rigidbody.AddForce(-hit.normal * hitForce);
+            //Deal damage if the target is ShootableObject
+            ShootableObject target = hit.transform.GetComponentInParent<ShootableObject>();
+            if (target != null)
+            {
+                target.DealDamage(weaponDamage);
+                if (target.IsDead)
+                    targetIsAlive = false;
+            }
+
+            //Manage and display the shot's debris if any.
+            if (targetIsAlive)
+            {
+                //Add physics effect if the target has a Rigidbody
+                if (hit.rigidbody != null)
+                    hit.rigidbody.AddForce(-hit.normal * hitForce);
+
+                GameObject shotDebris = ObjectPool.instance.GetPooledObject();
+                if (shotDebris != null)
+                {
+                    Transform parent = hit.transform.Find(SHOTEFFECTS_PARENT_NAME);     //This is the parent object holding all shot effects.
+                    if (parent == null)
+                    {
+                        parent = new GameObject(SHOTEFFECTS_PARENT_NAME).transform;
+                        parent.SetParent(hit.transform);
+                    }
+                    //           Instantiate(shotDebris, hit.point, Quaternion.LookRotation(hit.normal), parent);
+                    shotDebris.transform.position = hit.point;
+                    shotDebris.transform.rotation = Quaternion.LookRotation(hit.normal);
+                    shotDebris.transform.SetParent(parent);
+                    shotDebris.SetActive(true);
+                }
+            }
+        }
 
         //Play the weapon's audio source if any.
         if (weaponAudio != null)
             weaponAudio.Play();
-
-        //Manage and display the shot's debris if any.
-        if (shotDebris != null)
-        {
-            Transform parent = hit.transform.Find("ShotEffects");     //This is the parent object holding all shot effects.
-            if (parent == null)
-            {
-                parent = new GameObject("ShotEffects").transform;
-                parent.SetParent(hit.transform);
-            }
-            Instantiate(shotDebris, hit.point, Quaternion.LookRotation(hit.normal), parent);
-        }
 
         //Manage the LineRenderer
         laserLine.enabled = true;

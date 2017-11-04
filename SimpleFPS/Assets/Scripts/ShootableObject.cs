@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class ShootableObject : MonoBehaviour {
 
@@ -10,6 +11,13 @@ public class ShootableObject : MonoBehaviour {
 
     private WaitForSeconds audioDuration;
     private bool isDead = false;
+    private static string SHOT_EFFECTS_PARENT_NAME = "ShotEffects";
+
+    public bool IsDead
+    {
+        get { return isDead; }
+        private set { isDead = value; }
+    }
 
     void Start()
     {
@@ -20,12 +28,21 @@ public class ShootableObject : MonoBehaviour {
     public void DealDamage(int damage)
     {
         health -= damage;
-        Debug.Log(health);
 
-        if (health <= 0 && !isDead)
+        if (health <= 0 && !IsDead)
         {
-            isDead = true;
+            IsDead = true;
             StartCoroutine(DieEffect());
+
+            Transform shotEffects = transform.Find(SHOT_EFFECTS_PARENT_NAME);
+            if (shotEffects != null)
+            {
+                foreach (Transform item in shotEffects.Cast<Transform>().ToList())
+                {
+                    item.gameObject.SetActive(false);
+                    item.transform.parent = ObjectPool.instance.transform;
+                }
+            }
         }
     }
 
