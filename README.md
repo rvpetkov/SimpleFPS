@@ -8,6 +8,7 @@ This First Person Shooter scene is created in order to demonstrate some of Unity
 	- Optimizing Clusters
 	- Light Probes
 - Physical Raycast		- done
+- Particle system		- 
 - etc.
 
 ..as well as some software development patterns applicable to the game development cycle:
