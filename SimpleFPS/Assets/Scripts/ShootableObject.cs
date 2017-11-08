@@ -7,11 +7,15 @@ public class ShootableObject : MonoBehaviour {
 
     public int health = 1;
     [Tooltip("Whis audio will play when the object is destroyed.")]
-    public AudioSource audioOnDestroy;
+    public AudioClip audioOnDestroy;
+
+    [Tooltip("Whis visual effect will be used when the object is destroyed.")]
+    public GameObject vfxOnDestroy;
 
     private WaitForSeconds audioDuration;
     private bool isDead = false;
     private static string SHOT_EFFECTS_PARENT_NAME = "ShotEffects";
+    private AudioSource audioSource;
 
     public bool IsDead
     {
@@ -22,7 +26,10 @@ public class ShootableObject : MonoBehaviour {
     void Start()
     {
         if (audioOnDestroy)
-            audioDuration = new WaitForSeconds(audioOnDestroy.clip.length);
+        {
+            audioSource = GetComponent<AudioSource>();
+            audioDuration = new WaitForSeconds(2);
+        }
     }
 
     public void DealDamage(int damage)
@@ -48,8 +55,20 @@ public class ShootableObject : MonoBehaviour {
 
     private IEnumerator DieEffect()
     {
-        if (audioOnDestroy != null)
-            audioOnDestroy.Play();
+        //Use the OnDeath Particle System visual effect if any.
+        if (vfxOnDestroy != null)
+        {
+            var position = transform.GetComponentInChildren<MeshRenderer>().transform.position;
+            GameObject vfx = Instantiate(vfxOnDestroy, position, Quaternion.identity);
+            Destroy(vfx, 5f);
+        }
+
+        //Play the OnDeath audio source if any.
+        if (audioOnDestroy != null && audioSource != null)
+        {
+            audioSource.clip = audioOnDestroy;
+            audioSource.Play();
+        }
 
         yield return audioDuration;
 

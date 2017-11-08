@@ -83,14 +83,14 @@ public class RaycastShoot : MonoBehaviour {
                 if (target.IsDead)
                     targetIsAlive = false;
             }
-
-            //Manage and display the shot's debris if any.
+            
             if (targetIsAlive)
             {
                 //Add physics effect if the target has a Rigidbody
                 if (hit.rigidbody != null)
                     hit.rigidbody.AddForce(-hit.normal * hitForce);
 
+                //Manage and display the shot's debris if any.
                 GameObject shotDebris = ObjectPool.instance.GetPooledObject();
                 if (shotDebris != null)
                 {
@@ -100,8 +100,7 @@ public class RaycastShoot : MonoBehaviour {
                         parent = new GameObject(SHOTEFFECTS_PARENT_NAME).transform;
                         parent.SetParent(hit.transform);
                     }
-                    //           Instantiate(shotDebris, hit.point, Quaternion.LookRotation(hit.normal), parent);
-                    shotDebris.transform.position = hit.point;
+                    shotDebris.transform.position = hit.point + (hit.normal * 0.001f);
                     shotDebris.transform.rotation = Quaternion.LookRotation(hit.normal);
                     shotDebris.transform.SetParent(parent);
                     shotDebris.SetActive(true);

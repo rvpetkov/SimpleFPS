@@ -32,8 +32,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool isGrounded = true;
     private float initialGroundingDistance;
 
-    private static float MIN_X_ROTATION = -50f;
-    private static float MAX_X_ROTATION = 50f;
+    private static float MIN_X_ROTATION = -60f;
+    private static float MAX_X_ROTATION = 60f;
     private static float CHARACTER_HEIGHT = 1.8f;
     private static float CHARACTER_CROUCHING_HEIGHT = 0.9f;
 
