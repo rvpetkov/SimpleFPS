@@ -12,6 +12,7 @@ This First Person Shooter scene is created in order to demonstrate some of Unity
 - etc.
 
 ..as well as some software development patterns applicable to the game development cycle:
+
 - Object Pool Pattern - done
 
 Others (ToDo):

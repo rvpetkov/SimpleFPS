@@ -43,6 +43,10 @@ public class RaycastShoot : MonoBehaviour {
 	void Update () {
         if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time > nextFire)
         {
+			//TODO: remove this - only for debugging!
+			GameObject.Find("HealthBar").GetComponent<HealthBar>().TakeDamage(5);
+			//
+
             nextFire = Time.time + fireRate;
 
             laserLine.SetPosition(0, weaponEnd.position);       //The laserLine will start at the point which represents the end of the weapon.
