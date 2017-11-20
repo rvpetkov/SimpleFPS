@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4125436703466316}
   m_Layer: 0
-  m_Name: Aerial Explosion
+  m_Name: Aerial Explosion Big
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

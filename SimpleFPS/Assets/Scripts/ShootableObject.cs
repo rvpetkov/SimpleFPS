@@ -39,7 +39,6 @@ public class ShootableObject : MonoBehaviour {
         if (health <= 0 && !IsDead)
         {
             IsDead = true;
-            StartCoroutine(DieEffect());
 
             Transform shotEffects = transform.Find(SHOT_EFFECTS_PARENT_NAME);
             if (shotEffects != null)
@@ -50,6 +49,8 @@ public class ShootableObject : MonoBehaviour {
                     item.transform.parent = ObjectPool.instance.transform;
                 }
             }
+
+			StartCoroutine(DieEffect());
         }
     }
 
@@ -67,7 +68,12 @@ public class ShootableObject : MonoBehaviour {
         if (audioOnDestroy != null && audioSource != null)
         {
             audioSource.clip = audioOnDestroy;
+			audioSource.loop = false;
             audioSource.Play();
+			MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer> ();
+			for (int i = 0; i < meshRenderers.Length; i++) {
+				meshRenderers [i].enabled = false;
+			}
         }
 
         yield return audioDuration;

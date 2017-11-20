@@ -293,6 +293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  detectionRadius: 30
 --- !u!114 &114909496931805980
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -306,6 +307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 2
   audioOnDestroy: {fileID: 0}
+  vfxOnDestroy: {fileID: 0}
 --- !u!135 &135729389196342138
 SphereCollider:
   m_ObjectHideFlags: 1

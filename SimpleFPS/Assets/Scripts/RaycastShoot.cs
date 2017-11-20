@@ -75,7 +75,7 @@ public class RaycastShoot : MonoBehaviour {
         {
             bool targetIsAlive = true;
 
-            //Deal damage if the target is ShootableObject
+            //Deal damage if the target is a ShootableObject
             ShootableObject target = hit.transform.GetComponentInParent<ShootableObject>();
             if (target != null)
             {
