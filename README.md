@@ -20,5 +20,6 @@ Others (ToDo):
 - Improve the enemy AI
 - Add a weapon system
 - Add UI
+	- Health bar		- done
 - Add Death and Victory conditions
 - Add power-ups
